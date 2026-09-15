@@ -1,0 +1,12 @@
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.log
+.env
+.env.*
+!.env.example
+queue.json
+state.json
+.DS_Store
