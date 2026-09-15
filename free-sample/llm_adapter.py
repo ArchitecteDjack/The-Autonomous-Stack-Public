@@ -27,14 +27,18 @@ import os
 import shutil
 import subprocess
 
+# Per-call wall-clock budget for the CLI (seconds). Agent CLIs can be slow.
 DEFAULT_TIMEOUT = int(os.environ.get("PACK_LLM_TIMEOUT", "300"))
 
+# backend -> (candidate binary names on PATH, argv builder for a one-shot prompt)
 _BACKENDS: dict[str, tuple[list[str], "callable"]] = {
     "claude": (["claude"], lambda b, prompt: [b, "-p", prompt]),
+    # --yolo : auto-approve actions so the run is fully non-interactive.
     "kimi": (["kimi-code"], lambda b, prompt: [b, "--yolo", "-p", prompt]),
     "codex": (["codex"], lambda b, prompt: [b, "exec", prompt]),
 }
 
+# Friendly aliases accepted in PACK_LLM.
 _PACK_LLM_ALIASES = {
     "kimi-code": "kimi",
     "kimicode": "kimi",
@@ -45,6 +49,7 @@ _PACK_LLM_ALIASES = {
     "gpt": "codex",
 }
 
+# Probe order when PACK_LLM is not set.
 _PROBE_ORDER = ("claude", "kimi", "codex")
 
 
@@ -63,7 +68,12 @@ def _resolve_binary(backend: str) -> str | None:
 
 
 def detect() -> str | None:
-    """Return the first available backend ('claude' | 'kimi' | 'codex'), or None."""
+    """Return the first available backend ('claude' | 'kimi' | 'codex'), or None.
+
+    Honors the PACK_LLM env override: if set to an installed backend, that one
+    wins; if set to an unknown/missing backend, returns None (explicit, no
+    silent fallback to a backend the operator did not ask for).
+    """
     forced = os.environ.get("PACK_LLM", "").strip().lower()
     forced = _PACK_LLM_ALIASES.get(forced, forced)
     if forced:
@@ -89,7 +99,11 @@ class LLMAdapter:
         return bool(self.backend and self.binary)
 
     def run(self, system_prompt: str, user_input: str) -> str:
-        """Run one non-interactive reasoning call; return the model's text output."""
+        """Run one non-interactive reasoning call; return the model's text output.
+
+        Raises NoLLMAvailable if no CLI is connected (caller should fall back to
+        deterministic mode).
+        """
         if not self.available:
             raise NoLLMAvailable(
                 "No LLM CLI found. Install & log in to one of: claude / kimi-code / codex "
@@ -108,7 +122,7 @@ class LLMAdapter:
                 capture_output=True,
                 text=True,
                 timeout=self.timeout,
-                stdin=subprocess.DEVNULL,
+                stdin=subprocess.DEVNULL,  # never block waiting for interactive input
                 env=os.environ.copy(),
             )
         except subprocess.TimeoutExpired as exc:
@@ -122,7 +136,12 @@ class LLMAdapter:
         return out
 
     def run_json(self, system_prompt: str, user_input: str) -> dict:
-        """Like run(), but best-effort parse the reply into a dict."""
+        """Like run(), but best-effort parse the reply into a dict.
+
+        Tolerant to agent CLIs that wrap/word-wrap their output (e.g. Kimi):
+        scans for the last balanced {...} block. Returns {"_raw": <text>} if no
+        JSON object can be parsed.
+        """
         text = self.run(system_prompt, user_input)
         obj = _extract_json(text)
         return obj if obj is not None else {"_raw": text}
@@ -143,7 +162,7 @@ def _extract_json(text: str) -> dict | None:
             stack.pop()
             if not stack and start is not None:
                 spans.append(text[start:i + 1])
-    candidates.extend(reversed(spans))
+    candidates.extend(reversed(spans))  # prefer the last complete object
     for cand in candidates:
         try:
             obj = json.loads(cand)
