@@ -1,0 +1,4 @@
+# Free Sample Agent v1.0 — stdlib only (argparse, json, os, re, tempfile, datetime…)
+# The queue + transform core and the BYO-LLM adapter need NO third-party packages.
+# The optional LLM "brain" is your own CLI (Claude Code / Kimi Code / Codex), called
+# as a subprocess — so there is no Python SDK / API-key dependency here either.
