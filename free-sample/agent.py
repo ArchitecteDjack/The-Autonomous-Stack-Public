@@ -30,10 +30,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+# BYO-LLM adapter (claude/kimi/codex). Optional: the agent runs deterministically
+# if the module or a CLI is unavailable, so a buyer is never blocked.
 try:
     from llm_adapter import LLMAdapter, NoLLMAvailable, detect as _detect_llm
     _ADAPTER_IMPORT_OK = True
-except Exception:
+except Exception:  # pragma: no cover - defensive: never let a missing adapter break the agent
     _ADAPTER_IMPORT_OK = False
 
     class NoLLMAvailable(RuntimeError):
@@ -45,6 +47,7 @@ except Exception:
 PACK_DIR = Path(__file__).resolve().parent
 QUEUE_PATH = os.environ.get("SAMPLE_QUEUE_PATH", str(PACK_DIR / "sample_queue.json"))
 
+# Deterministic transforms — the honest no-LLM core. Extend with your own.
 TRANSFORMS = {
     "upper": lambda s: s.upper(),
     "lower": lambda s: s.lower(),
@@ -56,6 +59,10 @@ TRANSFORMS = {
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Tiny file-backed queue (atomic writes — survives crashes mid-write)
+# ──────────────────────────────────────────────────────────────────────────────
 
 def _load_queue() -> list[dict[str, Any]]:
     try:
@@ -95,6 +102,10 @@ def enqueue(text: str, transform: str) -> str:
     return task_id
 
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Prompts (loaded from PROMPTS.md — single source of truth, no orphan prompts)
+# ──────────────────────────────────────────────────────────────────────────────
+
 def load_prompt(section_title: str) -> str | None:
     """Extract the fenced ``` block following a heading containing section_title in PROMPTS.md."""
     md = PACK_DIR / "PROMPTS.md"
@@ -109,6 +120,9 @@ def load_prompt(section_title: str) -> str | None:
     return m.group(1).strip() if m else None
 
 
+# ──────────────────────────────────────────────────────────────────────────────
+# LLM wiring — a single shared adapter instance (None => deterministic mode)
+# ──────────────────────────────────────────────────────────────────────────────
 _LLM: "LLMAdapter | None" = None
 _LLM_DISABLED = False
 
@@ -150,6 +164,7 @@ def _apply_with_llm(adapter: "LLMAdapter", text: str, transform: str) -> str:
 
 
 def process_one() -> dict[str, Any] | None:
+    """Process the oldest pending task. Returns the task dict, or None if queue empty."""
     tasks = _load_queue()
     for task in tasks:
         if task.get("status") == "pending":
@@ -173,10 +188,25 @@ def process_one() -> dict[str, Any] | None:
     return None
 
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Batch task handler — deterministic, LLM-free. Given a whole transform queue in
+# one payload, apply supported transforms, route unsupported ones to human review
+# and flag task ids referenced by operators but absent from the queue. Never
+# invents a task id, transform or result: everything is derived from the input.
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Task-id shape used by this pack (enqueue() emits "s-0001"...). Used only to spot
+# ids mentioned in free-text operator notes; we never synthesise new ones.
 _TASK_ID_RE = re.compile(r"\bs-\d{3,4}\b")
 
 
 def _handle_task_deterministic(task_type: str, payload: dict[str, Any]) -> dict[str, Any] | None:
+    """Process a full text-transform queue without any LLM.
+
+    Returns {"completed", "manual_review", "unprocessed"} for the
+    ``process_transform_queue`` task, or None for unknown task types (so a caller
+    can fall back to another strategy). Pure function of ``payload`` — no I/O.
+    """
     if task_type != "process_transform_queue":
         return None
     payload = payload or {}
@@ -212,6 +242,8 @@ def _handle_task_deterministic(task_type: str, payload: dict[str, Any]) -> dict[
                 "reason": f"transform '{transform}' is not supported — routed to a human, not guessed",
             })
 
+    # Task ids named in operator notes that are not in the queue: acknowledge them
+    # as unprocessed (so they are never silently dropped) but never execute them.
     unprocessed: list[dict[str, Any]] = []
     seen: set[str] = set()
     for note in payload.get("operator_notes") or []:
