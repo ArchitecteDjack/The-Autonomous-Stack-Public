@@ -2,7 +2,7 @@
   "schema_version": 1,
   "name": "The Autonomous Stack — Public Digest",
   "repository": "ArchitecteDjack/The-Autonomous-Stack-Public",
-  "website": "https://theautonomousstack.xyz/",
+  "website": "https://theautonomousstack.xyz/?ref=github-digest",
   "purpose": "Compact machine-readable digest of the public repository, documentation, and Free Sample Agent.",
   "maintenance": {
     "rule": "Keep this digest synchronized with public-facing Markdown and material behavior changes.",
@@ -12,7 +12,7 @@
     "positioning": "Turnkey building blocks for autonomous AI agents.",
     "public_repository_scope": "Documentation plus the complete Free Sample Agent v1.0. Paid packs and production/server internals are excluded.",
     "local_first": "The free sample deterministic core runs locally without a cloud API. Optional LLM reasoning uses an already-installed supported CLI.",
-    "paid_catalog": "Available from https://theautonomousstack.xyz/."
+    "paid_catalog": "Available from https://theautonomousstack.xyz/?ref=github-digest."
   },
   "free_sample": {
     "id": "agent-sample-free-v1",
