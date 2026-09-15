@@ -1,0 +1,12 @@
+[Unit]
+Description=Free Sample Agent (agent-sample-free-v1)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/agent-sample-free-v1
+ExecStart=/opt/agent-sample-free-v1/venv/bin/python /opt/agent-sample-free-v1/agent.py run
+
+[Install]
+WantedBy=multi-user.target
