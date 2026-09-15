@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "name": "The Autonomous Stack — Public Digest",
+  "repository": "ArchitecteDjack/The-Autonomous-Stack-Public",
+  "website": "https://theautonomousstack.xyz/",
+  "purpose": "Compact machine-readable digest of the public repository, documentation, and Free Sample Agent.",
+  "maintenance": {
+    "rule": "Keep this digest synchronized with public-facing Markdown and material behavior changes.",
+    "max_tokens": 8000
+  },
+  "product": {
+    "positioning": "Turnkey building blocks for autonomous AI agents.",
+    "public_repository_scope": "Documentation plus the complete Free Sample Agent v1.0. Paid packs and production/server internals are excluded.",
+    "local_first": "The free sample deterministic core runs locally without a cloud API. Optional LLM reasoning uses an already-installed supported CLI.",
+    "paid_catalog": "Available from https://theautonomousstack.xyz/."
+  },
+  "free_sample": {
+    "id": "agent-sample-free-v1",
+    "name": "Free Sample Agent v1.0",
+    "version": "1.0.0",
+    "entrypoint": "free-sample/agent.py",
+    "requirements": "Python >= 3.10; deterministic core uses Python stdlib only; systemd optional.",
+    "capabilities": [
+      "JSON-file task queue with enqueue, run, and status operations",
+      "deterministic transforms: upper, lower, reverse, wordcount",
+      "atomic queue writes",
+      "optional BYO-LLM CLI reasoning",
+      "Debian/Ubuntu installer",
+      "optional systemd service",
+      "offline tests and smoke test"
+    ],
+    "llm_cli_support": {
+      "claude_code": "generic CLI compatibility",
+      "kimi_code": "generic CLI compatibility",
+      "codex_cli": "generic CLI compatibility",
+      "fallback": "deterministic core"
+    },
+    "not_claimed_as_native": [
+      "Ollama",
+      "llama.cpp",
+      "MCP",
+      "DeepSeek Harness"
+    ],
+    "quickstart": [
+      "git clone https://github.com/ArchitecteDjack/The-Autonomous-Stack-Public.git",
+      "cd The-Autonomous-Stack-Public/free-sample",
+      "bash install.sh --no-service",
+      "bash smoke_test.sh",
+      "python3 agent.py enqueue --text \"hello world\" --transform upper",
+      "python3 agent.py run --once",
+      "python3 agent.py status"
+    ]
+  },
+  "architecture": {
+    "sample_flow": [
+      "CLI input",
+      "file-backed queue",
+      "oldest pending task selection",
+      "optional BYO-LLM reasoning or deterministic transform",
+      "atomic result persistence",
+      "status/reporting"
+    ],
+    "states": [
+      "IDLE",
+      "PICKING",
+      "TRANSFORMING",
+      "REPORTING"
+    ],
+    "invariants": [
+      "completed tasks are not reprocessed",
+      "unknown transforms fail explicitly",
+      "queue writes are atomic",
+      "missing LLM CLI does not prevent deterministic operation"
+    ]
+  },
+  "x402": {
+    "status": "The unauthenticated HTTP 402 challenge on paid pack endpoints was verified during the publication audit; the public repository does not claim an independently exercised full paid settlement flow.",
+    "network": "Base mainnet",
+    "asset": "USDC",
+    "paid_endpoint_pattern": "GET /api/v1/pack/{id}",
+    "flow": [
+      "discover pack",
+      "request paid endpoint",
+      "receive HTTP 402 and PAYMENT-REQUIRED",
+      "authorize payment",
+      "retry with PAYMENT-SIGNATURE",
+      "receive ZIP on successful settlement"
+    ]
+  },
+  "discovery": [
+    "https://theautonomousstack.xyz/llms.txt",
+    "https://theautonomousstack.xyz/api/v1/discover",
+    "https://theautonomousstack.xyz/api/v1/tools/discover",
+    "https://theautonomousstack.xyz/openapi.json",
+    "https://theautonomousstack.xyz/TOOL_MANIFEST.md",
+    "https://theautonomousstack.xyz/INTEGRATE.md"
+  ],
+  "public_markdown_index": {
+    "README.md": "Repository landing page, free sample quickstart, scope, compatibility, x402, discovery.",
+    "CHANGELOG.md": "Public repository release history.",
+    "ROADMAP.md": "Near-term public repository roadmap.",
+    "CONTRIBUTING.md": "Contribution scope and public/private boundary.",
+    "SECURITY.md": "Security reporting and rules against publishing sensitive material.",
+    "docs/architecture.md": "Free sample architecture and execution flow.",
+    "docs/compatibility.md": "Verified and generic compatibility status.",
+    "docs/discovery.md": "Machine-readable public discovery surfaces.",
+    "docs/faq.md": "Public FAQ and scope clarification.",
+    "docs/quickstart.md": "Minimal free sample setup and run instructions.",
+    "docs/x402.md": "x402 paid-pack discovery and HTTP 402 flow.",
+    "free-sample/README.md": "Canonical documentation for the Free Sample Agent.",
+    "free-sample/SOUL.md": "Mission, values, states, and invariants.",
+    "free-sample/SPEC.md": "Interfaces, parameters, dependencies, security, and scope.",
+    "free-sample/PROMPTS.md": "Transformer prompt used when optional BYO-LLM reasoning is available.",
+    "free-sample/CUSTOMIZE.md": "How to add deterministic transforms or adapt the prompt.",
+    "free-sample/CHECKLIST.md": "Minimal deployment and verification checklist.",
+    "free-sample/CHANGELOG.md": "Free sample version history."
+  },
+  "public_private_boundary": {
+    "public": [
+      "documentation",
+      "Free Sample Agent",
+      "tests",
+      "generic compatibility information",
+      "public x402/discovery information"
+    ],
+    "excluded": [
+      "paid pack source",
+      "production payment backend",
+      "server configuration",
+      "credentials or secrets",
+      "private infrastructure",
+      "internal logs",
+      "customer data"
+    ]
+  }
+}
