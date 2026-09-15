@@ -1,0 +1,59 @@
+{
+  "id": "agent-sample-free-v1",
+  "name": "Free Sample Agent v1.0",
+  "tagline": "A free, minimal but real agent: inspect pack structure and quality before you buy. Tiny task queue + deterministic text transforms, BYO-LLM.",
+  "version": "1.0.0",
+  "tier": "free",
+  "price_usd": 0,
+  "tags": [
+    "sample",
+    "free",
+    "demo",
+    "evaluation",
+    "byo-llm"
+  ],
+  "license": "Free sample. Provided as-is for evaluation.",
+  "code_entrypoint": "agent.py",
+  "icon": "🎁",
+  "files": {
+    "CHANGELOG.md": "Included pack file",
+    "CHECKLIST.md": "Included pack file",
+    "CUSTOMIZE.md": "Included pack file",
+    "PROMPTS.md": "Included pack file",
+    "README.md": "Included pack file",
+    "SOUL.md": "Included pack file",
+    "SPEC.md": "Included pack file",
+    "agent-sample-free-v1.json": "Included pack file",
+    "agent-sample-free-v1.service": "Included pack file",
+    "agent.py": "Included pack file",
+    "deploy.sh": "Included pack file",
+    "install.sh": "Included pack file",
+    "llm_adapter.py": "Included pack file",
+    "requirements.txt": "Included pack file",
+    "smoke_test.sh": "Included pack file",
+    "test_agent.py": "Included pack file"
+  },
+  "sync_rule": "Whenever a file in this pack changes, update this JSON accordingly.",
+  "human_readable": "README.md",
+  "changelog": "CHANGELOG.md",
+  "x402_endpoint": "/api/v1/pack/agent-sample-free-v1",
+  "payment_network": "eip155:8453",
+  "payment_asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "spec_sheet": {
+    "what_it_does": "A free, minimal but real agent: a tiny file-backed task queue feeds a deterministic text-transform pipeline (upper / lower / reverse / wordcount). Exists so a buyer can inspect pack quality and structure before paying. Runs offline; smarter with a BYO-LLM CLI.",
+    "inputs": ["text string via CLI (enqueue --text)", "transform name (upper/lower/reverse/wordcount)", "JSON queue file"],
+    "outputs": ["transformed text result per task", "structured JSON on stdout", "atomically updated JSON queue file"],
+    "formats": ["json", "text"],
+    "does_not": ["is NOT a production business product (structural sample only)", "does NOT do PDF/DOCX/HTML conversion", "does NOT connect to any ERP/CRM or external network", "does NOT generate documents (devis, factures, reports)"],
+    "sample_input": "enqueue --text \"hello world\" --transform upper",
+    "sample_output_excerpt": "{\"task_id\": \"s-0001\", \"status\": \"completed\", \"result\": \"HELLO WORLD\"}",
+    "requirements": "Python >= 3.10, stdlib only, BYO-LLM CLI optional (Claude Code / Kimi Code / Codex), systemd optional",
+    "deploy": "one-shot Debian : sudo bash install.sh (venv + optional systemd unit)"
+  },
+  "stats": {
+    "total_lines": 0,
+    "number_of_prompts": 1,
+    "test_coverage": "offline + smoke",
+    "last_updated": "2026-06-29"
+  }
+}
