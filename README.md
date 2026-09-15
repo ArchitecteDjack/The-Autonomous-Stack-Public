@@ -4,7 +4,7 @@
 
 Markdown + runnable Python, BYO-LLM, local-first workflows, and agent-native x402 purchasing.
 
-[Website](https://theautonomousstack.xyz/) · [Free sample](./free-sample/) · [Agent discovery](https://theautonomousstack.xyz/llms.txt) · [OpenAPI](https://theautonomousstack.xyz/openapi.json)
+[Website](https://theautonomousstack.xyz/) · [Free sample](./free-sample/) · [Digest](./DIGEST.json) · [Agent discovery](https://theautonomousstack.xyz/llms.txt) · [OpenAPI](https://theautonomousstack.xyz/openapi.json)
 
 ## Start free
 
