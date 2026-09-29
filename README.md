@@ -93,4 +93,4 @@ This public repository is intentionally separated from the private production re
 
 ## License
 
-The free sample is provided as-is for evaluation, matching the license statement shipped with the sample pack. Paid packs carry their own per-purchase license.
+The free sample and the documentation in this repository are released under the [MIT License](./LICENSE). Paid packs are not part of this repository and carry their own per-purchase license.

@@ -4,6 +4,10 @@
   "repository": "ArchitecteDjack/The-Autonomous-Stack-Public",
   "website": "https://theautonomousstack.xyz/?ref=github-digest",
   "purpose": "Compact machine-readable digest of the public repository, documentation, and Free Sample Agent.",
+  "license": {
+    "repository": "MIT (LICENSE)",
+    "paid_packs": "not in this repository; per-purchase license"
+  },
   "maintenance": {
     "rule": "Keep this digest synchronized with public-facing Markdown and material behavior changes.",
     "max_tokens": 8000

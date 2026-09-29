@@ -76,5 +76,5 @@ See `CUSTOMIZE.md` to plug in your own transforms or data.
 
 ## License
 
-Free sample. Provided as-is for evaluation. The paid packs carry their own
-per-purchase license.
+MIT License (see [LICENSE](../LICENSE) at the repository root). The paid packs
+carry their own per-purchase license.

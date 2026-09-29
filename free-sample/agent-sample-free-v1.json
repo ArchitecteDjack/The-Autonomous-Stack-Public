@@ -12,7 +12,7 @@
     "evaluation",
     "byo-llm"
   ],
-  "license": "Free sample. Provided as-is for evaluation.",
+  "license": "MIT",
   "code_entrypoint": "agent.py",
   "icon": "🎁",
   "files": {
